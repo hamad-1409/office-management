@@ -1,83 +1,31 @@
 <!DOCTYPE html>
 <html lang="ar">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>مخطط المبنى</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            background-color: #f5f5f5;
-            margin: 20px;
-        }
-        h1 {
-            margin-bottom: 20px;
-        }
-        #map-container {
-            position: relative;
-            display: inline-block;
-        }
-        #floor-plan {
-            max-width: 100%;
-            height: auto;
-            cursor: pointer;
-        }
-        .office {
-            position: absolute;
-            background-color: rgba(0, 123, 255, 0.7);
-            color: #fff;
-            padding: 5px;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-        .office:hover {
-            background-color: rgba(0, 123, 255, 1);
-        }
-        #info-box {
-            margin-top: 20px;
-            padding: 10px;
-            border: 1px solid #ddd;
-            background-color: #fff;
-            display: inline-block;
-            min-width: 300px;
-            text-align: left;
-        }
-    </style>
+<meta charset="UTF-8">
+<title>مخطط المبنى</title>
+
+<style>
+body{
+    margin:0;
+    background:#f5f5f5;
+    font-family:Arial;
+    text-align:center;
+}
+
+img{
+    max-width:95%;
+    margin-top:20px;
+    border:2px solid #ccc;
+}
+</style>
+
 </head>
+
 <body>
-    <h1>مخطط المبنى - الأدوار والمكاتب</h1>
-    <div id="map-container">
-        <img id="floor-plan" src="floor-plan.jpg" alt="مخطط الدور" />
-        <!-- الأمثلة: نضيف مكاتب -->
-        <div class="office" style="top: 50px; left: 100px;" data-office="101" data-employee="أحمد محمد" data-cost="12500">
-            مكتب 101
-        </div>
-        <div class="office" style="top: 150px; left: 200px;" data-office="102" data-employee="سارة علي" data-cost="14000">
-            مكتب 102
-        </div>
-        <!-- أضف المزيد من المكاتب حسب الحاجة -->
-    </div>
-    <div id="info-box">
-        اضغط على مكتب لعرض التفاصيل هنا
-    </div>
 
-    <script>
-        const offices = document.querySelectorAll('.office');
-        const infoBox = document.getElementById('info-box');
+<h2>مخطط الدور الأرضي</h2>
 
-        offices.forEach(office => {
-            office.addEventListener('click', () => {
-                const officeNumber = office.getAttribute('data-office');
-                const employee = office.getAttribute('data-employee');
-                const cost = office.getAttribute('data-cost');
-                infoBox.innerHTML = `
-                    <h3>مكتب رقم: ${officeNumber}</h3>
-                    <p><strong>اسم الموظف:</strong> ${employee}</p>
-                    <p><strong>التكلفة:</strong> ${cost} ريال</p>
-                `;
-            });
-        });
-    </script>
+<img src="floor.png" alt="المخطط">
+
 </body>
 </html>
