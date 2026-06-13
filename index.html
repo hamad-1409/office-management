@@ -1,296 +1,83 @@
-تمام — هذا **موقع كامل جاهز (نسخة أولى احترافية)** يدعم:
-
-* مبنى فيه (قبو + 6 أدوار + سطح)
-* اختيار الدور
-* عرض المكاتب داخل الدور
-* الضغط على المكتب لعرض البيانات
-* تعديل وحفظ البيانات
-* يعمل مباشرة بدون قاعدة بيانات (يحفظ في المتصفح)
-
----
-
-# ✅ 1) ملف الموقع الكامل (index.html)
-
-انسخ هذا الملف كما هو:
-
-```html
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="ar">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>نظام إدارة المكاتب</title>
-
-<style>
-body{
-    font-family: Tahoma;
-    margin:0;
-    background:#f4f6f8;
-}
-
-header{
-    background:#1976d2;
-    color:white;
-    padding:15px;
-    text-align:center;
-}
-
-.container{
-    display:flex;
-    height:90vh;
-}
-
-/* القائمة */
-.floors{
-    width:220px;
-    background:#fff;
-    padding:10px;
-    border-left:1px solid #ddd;
-    overflow:auto;
-}
-
-.floor-btn{
-    padding:10px;
-    margin:5px 0;
-    background:#eee;
-    cursor:pointer;
-    border-radius:6px;
-    text-align:center;
-}
-
-.floor-btn:hover{
-    background:#1976d2;
-    color:white;
-}
-
-/* المخطط */
-.map{
-    flex:2;
-    padding:20px;
-}
-
-.office{
-    width:120px;
-    height:80px;
-    background:#4caf50;
-    color:white;
-    display:inline-flex;
-    align-items:center;
-    justify-content:center;
-    margin:10px;
-    border-radius:8px;
-    cursor:pointer;
-}
-
-.office:hover{
-    background:#2e7d32;
-}
-
-/* التفاصيل */
-.panel{
-    width:300px;
-    background:#fff;
-    padding:15px;
-    border-right:1px solid #ddd;
-}
-
-input{
-    width:100%;
-    padding:8px;
-    margin:5px 0;
-}
-
-button{
-    width:100%;
-    padding:10px;
-    background:#1976d2;
-    color:white;
-    border:none;
-    cursor:pointer;
-    margin-top:10px;
-}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مخطط المبنى</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f5f5f5;
+            margin: 20px;
+        }
+        h1 {
+            margin-bottom: 20px;
+        }
+        #map-container {
+            position: relative;
+            display: inline-block;
+        }
+        #floor-plan {
+            max-width: 100%;
+            height: auto;
+            cursor: pointer;
+        }
+        .office {
+            position: absolute;
+            background-color: rgba(0, 123, 255, 0.7);
+            color: #fff;
+            padding: 5px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .office:hover {
+            background-color: rgba(0, 123, 255, 1);
+        }
+        #info-box {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            background-color: #fff;
+            display: inline-block;
+            min-width: 300px;
+            text-align: left;
+        }
+    </style>
 </head>
-
 <body>
+    <h1>مخطط المبنى - الأدوار والمكاتب</h1>
+    <div id="map-container">
+        <img id="floor-plan" src="floor-plan.jpg" alt="مخطط الدور" />
+        <!-- الأمثلة: نضيف مكاتب -->
+        <div class="office" style="top: 50px; left: 100px;" data-office="101" data-employee="أحمد محمد" data-cost="12500">
+            مكتب 101
+        </div>
+        <div class="office" style="top: 150px; left: 200px;" data-office="102" data-employee="سارة علي" data-cost="14000">
+            مكتب 102
+        </div>
+        <!-- أضف المزيد من المكاتب حسب الحاجة -->
+    </div>
+    <div id="info-box">
+        اضغط على مكتب لعرض التفاصيل هنا
+    </div>
 
-<header>
-<h2>نظام إدارة المكاتب</h2>
-</header>
+    <script>
+        const offices = document.querySelectorAll('.office');
+        const infoBox = document.getElementById('info-box');
 
-<div class="container">
-
-<!-- الأدوار -->
-<div class="floors">
-<h3>الأدوار</h3>
-<div id="floorList"></div>
-</div>
-
-<!-- المخطط -->
-<div class="map">
-<h3 id="floorTitle">اختر دور</h3>
-<div id="officeList"></div>
-</div>
-
-<!-- التفاصيل -->
-<div class="panel">
-<h3>بيانات المكتب</h3>
-
-<input id="officeId" placeholder="رقم المكتب" readonly>
-<input id="employee" placeholder="اسم الموظف">
-<input id="phone" placeholder="رقم الاتصال">
-<input id="outlets" placeholder="عدد الأفياش">
-<input id="ac" placeholder="التكييف">
-
-<button onclick="saveOffice()">حفظ</button>
-</div>
-
-</div>
-
-<script>
-
-/* الأدوار */
-const building = [
-{ id:"B1", name:"القبو" },
-{ id:"G", name:"الأرضي" },
-{ id:"F1", name:"الدور الأول" },
-{ id:"F2", name:"الدور الثاني" },
-{ id:"F3", name:"الدور الثالث" },
-{ id:"F4", name:"الدور الرابع" },
-{ id:"F5", name:"الدور الخامس" },
-{ id:"F6", name:"الدور السادس" },
-{ id:"R", name:"السطح" }
-];
-
-/* بيانات المكاتب */
-let data = JSON.parse(localStorage.getItem("offices")) || {};
-
-/* إنشاء أدوار */
-const floorList = document.getElementById("floorList");
-
-building.forEach(f=>{
-    const div = document.createElement("div");
-    div.className="floor-btn";
-    div.innerText=f.name;
-    div.onclick=()=>loadFloor(f);
-    floorList.appendChild(div);
-});
-
-/* تحميل الدور */
-function loadFloor(floor){
-
-document.getElementById("floorTitle").innerText = floor.name;
-
-/* مكاتب تجريبية */
-let offices = [];
-
-for(let i=1;i<=6;i++){
-    let id = floor.id + "0" + i;
-
-    offices.push(id);
-
-    if(!data[id]){
-        data[id]={
-            employee:"",
-            phone:"",
-            outlets:0,
-            ac:""
-        };
-    }
-}
-
-/* عرض */
-const officeList = document.getElementById("officeList");
-officeList.innerHTML="";
-
-offices.forEach(id=>{
-    const div = document.createElement("div");
-    div.className="office";
-    div.innerText=id;
-    div.onclick=()=>loadOffice(id);
-    officeList.appendChild(div);
-});
-
-}
-
-/* تحميل مكتب */
-function loadOffice(id){
-
-document.getElementById("officeId").value=id;
-document.getElementById("employee").value=data[id].employee;
-document.getElementById("phone").value=data[id].phone;
-document.getElementById("outlets").value=data[id].outlets;
-document.getElementById("ac").value=data[id].ac;
-
-}
-
-/* حفظ */
-function saveOffice(){
-
-const id=document.getElementById("officeId").value;
-
-if(!id) return;
-
-data[id]={
-employee:document.getElementById("employee").value,
-phone:document.getElementById("phone").value,
-outlets:document.getElementById("outlets").value,
-ac:document.getElementById("ac").value
-};
-
-localStorage.setItem("offices", JSON.stringify(data));
-
-alert("تم الحفظ بنجاح");
-
-}
-
-</script>
-
+        offices.forEach(office => {
+            office.addEventListener('click', () => {
+                const officeNumber = office.getAttribute('data-office');
+                const employee = office.getAttribute('data-employee');
+                const cost = office.getAttribute('data-cost');
+                infoBox.innerHTML = `
+                    <h3>مكتب رقم: ${officeNumber}</h3>
+                    <p><strong>اسم الموظف:</strong> ${employee}</p>
+                    <p><strong>التكلفة:</strong> ${cost} ريال</p>
+                `;
+            });
+        });
+    </script>
 </body>
 </html>
-```
-
----
-
-# ✅ 2) كيف تشغّله على GitHub
-
-1. افتح مستودعك في [GitHub](https://github.com?utm_source=chatgpt.com)
-2. ادخل إلى **Add file → Create new file**
-3. اسم الملف:
-
-```text
-index.html
-```
-
-4. الصق الكود
-5. اضغط **Commit**
-6. فعّل **GitHub Pages**
-
----
-
-# 🌐 النتيجة
-
-سيصبح عندك موقع مثل:
-
-```text
-https://yourname.github.io/office-management/
-```
-
----
-
-# 🚀 ماذا أستطيع أطور لك بعده؟
-
-إذا أردت تطويره أكثر أستطيع أضيف:
-
-* قاعدة بيانات حقيقية (Supabase)
-* تسجيل دخول للمستخدمين
-* مخطط مبنى حقيقي (SVG أو صورة)
-* تحديد مكان المكتب داخل الرسم
-* لوحة تحكم احترافية
-* بحث عن موظف
-* تصدير Excel
-
----
-
-إذا تريد الخطوة التالية:
-👉 “أخليه مثل أنظمة الشركات الكبيرة (مع مخطط فعلي قابل للنقر)” قل لي 👍
